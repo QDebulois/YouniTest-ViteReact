@@ -36,7 +36,10 @@ export default function PostForm(props) {
         } else if (res.status === 400) {
           setRes({ status: res.status, msg: "Erreur dans le formulaire." });
         } else if (res.status === 401) {
-          setRes({ status: res.status, msg: "Erreur JWT expiré, veuillez vous reconnecter." });
+          setRes({
+            status: res.status,
+            msg: "Erreur JWT expiré, veuillez vous reconnecter.",
+          });
         } else {
           setRes({
             status: res.status,
@@ -52,16 +55,14 @@ export default function PostForm(props) {
   const showRes = (res: Res) => {
     return (
       {
-        201: (
-          <div className="alert alert-success mx-auto">{res.msg}</div>
-        ),
-        400: (
-          <div className="alert alert-danger mx-auto">{res.msg}</div>
-        ),
-        401: (
-          <div className="alert alert-danger mx-auto">{res.msg}</div>
-        ),
-      }[res.status] || <div className="alert alert-danger">{res.msg} {res.status}</div>
+        201: <div className="alert alert-success mx-auto">{res.msg}</div>,
+        400: <div className="alert alert-danger mx-auto">{res.msg}</div>,
+        401: <div className="alert alert-danger mx-auto">{res.msg}</div>,
+      }[res.status] || (
+        <div className="alert alert-danger">
+          {res.msg} {res.status}
+        </div>
+      )
     );
   };
 
@@ -84,61 +85,67 @@ export default function PostForm(props) {
 
   return (
     <>
-      <h2>Créer un Post</h2>
-      <form
-        className="d-flex flex-column gap-4 p-5"
-        onSubmit={(e) => handleFormSubmit(e)}
-      >
-        {res && showRes(res)}
-        <label>
-          Catégorie
-          <select
-            className="form-control"
-            onChange={(e) => {
-              setCategory(e.target.value);
-            }}
-            required
+      {jwtDecoded && jwtDecoded.roles.includes("ROLE_USER") ? (
+        <>
+          <h2>Créer un Post</h2>
+          <form
+            className="d-flex flex-column gap-4 p-5"
+            onSubmit={(e) => handleFormSubmit(e)}
           >
-            {categories ? (
-              <>
-                {categories.map((c) => {
-                  if (!category) setCategory(c.id);
-                  return (
-                    <option key={c.id} value={c.id}>
-                      {c.title}
-                    </option>
-                  );
-                })}
-              </>
-            ) : (
-              <option>Chargement des categories...</option>
-            )}
-          </select>
-        </label>
-        <label>
-          Titre
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Titre"
-            onChange={(e) => {
-              setTitle(e.target.value);
-            }}
-            required
-          />
-        </label>
-        <label>
-          Text
-          <textarea
-            className="form-control"
-            onChange={(e) => setText(e.target.value)}
-            required
-          ></textarea>
-        </label>
-        <button type="submit" className="btn btn-success mx-auto">
-          Enregistrer
-        </button>
-      </form>
+            {res && showRes(res)}
+            <label>
+              Catégorie
+              <select
+                className="form-control"
+                onChange={(e) => {
+                  setCategory(e.target.value);
+                }}
+                required
+              >
+                {categories ? (
+                  <>
+                    {categories.map((c) => {
+                      if (!category) setCategory(c.id);
+                      return (
+                        <option key={c.id} value={c.id}>
+                          {c.title}
+                        </option>
+                      );
+                    })}
+                  </>
+                ) : (
+                  <option>Chargement des categories...</option>
+                )}
+              </select>
+            </label>
+            <label>
+              Titre
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Titre"
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                }}
+                required
+              />
+            </label>
+            <label>
+              Text
+              <textarea
+                className="form-control"
+                onChange={(e) => setText(e.target.value)}
+                required
+              ></textarea>
+            </label>
+            <button type="submit" className="btn btn-success mx-auto">
+              Enregistrer
+            </button>
+          </form>
+        </>
+      ) : (
+        <p>Access Denied</p>
+      )}
     </>
   );
 }

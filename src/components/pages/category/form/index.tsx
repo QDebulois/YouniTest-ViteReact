@@ -29,7 +29,10 @@ export default function CategoryForm(props) {
         } else if (res.status === 400) {
           setRes({ status: res.status, msg: "Erreur dans le formulaire." });
         } else if (res.status === 401) {
-          setRes({ status: res.status, msg: "Erreur JWT expiré, veuillez vous reconnecter." });
+          setRes({
+            status: res.status,
+            msg: "Erreur JWT expiré, veuillez vous reconnecter.",
+          });
         } else {
           setRes({
             status: res.status,
@@ -45,16 +48,14 @@ export default function CategoryForm(props) {
   const showRes = (res: Res) => {
     return (
       {
-        201: (
-          <div className="alert alert-success mx-auto">{res.msg}</div>
-        ),
-        400: (
-          <div className="alert alert-danger mx-auto">{res.msg}</div>
-        ),
-        401: (
-          <div className="alert alert-danger mx-auto">{res.msg}</div>
-        ),
-      }[res.status] || <div className="alert alert-danger">{res.msg} {res.status}</div>
+        201: <div className="alert alert-success mx-auto">{res.msg}</div>,
+        400: <div className="alert alert-danger mx-auto">{res.msg}</div>,
+        401: <div className="alert alert-danger mx-auto">{res.msg}</div>,
+      }[res.status] || (
+        <div className="alert alert-danger">
+          {res.msg} {res.status}
+        </div>
+      )
     );
   };
 
@@ -67,28 +68,34 @@ export default function CategoryForm(props) {
 
   return (
     <>
-      <h2>Créer une Catégorie</h2>
-      <form
-        className="d-flex flex-column gap-4 p-5"
-        onSubmit={(e) => handleFormSubmit(e)}
-      >
-        {res && showRes(res)}
-        <label>
-          Titre
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Titre"
-            onChange={(e) => {
-              setTitle(e.target.value);
-            }}
-            required
-          />
-        </label>
-        <button type="submit" className="btn btn-success mx-auto">
-          Enregistrer
-        </button>
-      </form>
+      {jwtDecoded && jwtDecoded.roles.includes("ROLE_ADMIN") ? (
+        <>
+          <h2>Créer une Catégorie</h2>
+          <form
+            className="d-flex flex-column gap-4 p-5"
+            onSubmit={(e) => handleFormSubmit(e)}
+          >
+            {res && showRes(res)}
+            <label>
+              Titre
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Titre"
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                }}
+                required
+              />
+            </label>
+            <button type="submit" className="btn btn-success mx-auto">
+              Enregistrer
+            </button>
+          </form>
+        </>
+      ) : (
+        <p>Access Denied</p>
+      )}
     </>
   );
 }

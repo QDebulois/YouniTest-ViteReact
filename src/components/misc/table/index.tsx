@@ -42,9 +42,7 @@ export default function Table(props) {
     return props.data.map((category, categoryIndex) => (
       <tr key={`tr_${categoryIndex}`}>
         {Object.values(category).map((data, dataIndex) => (
-          <td key={`td_${category.id}_${dataIndex}`}>
-            {manageDataType(data)}
-          </td>
+          <td key={`td_${category.id}_${dataIndex}`}>{manageDataType(data)}</td>
         ))}
       </tr>
     ));
@@ -53,7 +51,9 @@ export default function Table(props) {
   return (
     <>
       <table className="table">
-        <thead>{generateHeaders()}</thead>
+        <thead>
+          <tr>{generateHeaders()}</tr>
+        </thead>
         <tbody>{generateRows()}</tbody>
       </table>
     </>
